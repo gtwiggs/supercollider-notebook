@@ -1,0 +1,19 @@
+{
+  "name": "hydra-video-synth",
+  "version": "1.0.0",
+  "description": "Playground",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "http-server . -p 8090 -c-1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "hydra-video-synth"
+  },
+  "author": "Glenn Twiggs",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

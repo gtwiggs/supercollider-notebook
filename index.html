@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Hydra Video Synth</title>
+        <style>
+            body {
+                background-color: black;
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <script src="https://cdn.jsdelivr.net/npm/hydra-synth/dist/hydra-synth.js"></script>
+        <script>
+            var img = new Image();
+            img.onload = function () {
+                var hydra = new Hydra({
+                    detectAudio: false,
+                    width: img.width,
+                    height: img.height,
+                });
+                s0.initImage(img.src);
+                osc(/*6*/ () => mouse.y * 0.01).modulate(src(s0), /*2*/ () => mouse.x * 0.005).out(o0);
+            };
+            img.src = "/DSC05953.jpg";
+        </script>
+    </body>
+</html>
