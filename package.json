@@ -13,6 +13,21 @@
   ],
   "categories": ["Other"],
   "contributes": {
+    "languages": [
+      {
+        "id": "sclang",
+        "aliases": ["SuperCollider", "sclang"],
+        "extensions": [".sc", ".scs", ".scd", ".scnb"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sclang",
+        "scopeName": "source.sclang",
+        "path": "./syntaxes/sclang.tmLanguage.json"
+      }
+    ],
     "notebooks": [
       {
         "type": "supercollider-notebook",
@@ -20,6 +35,30 @@
         "selector": [
           { "filenamePattern": "*.scnb" }
         ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "supercollider-notebook.freeAll",
+        "title": "SuperCollider: s.freeAll"
+      },
+      {
+        "command": "supercollider-notebook.rebootServer",
+        "title": "SuperCollider: reboot server"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "supercollider-notebook.freeAll",
+        "key": "ctrl+.",
+        "mac": "cmd+.",
+        "when": "notebookEditorFocused && resourceExtname == .scnb"
+      },
+      {
+        "command": "supercollider-notebook.rebootServer",
+        "key": "ctrl+shift+.",
+        "mac": "cmd+shift+.",
+        "when": "notebookEditorFocused && resourceExtname == .scnb"
       }
     ],
     "configuration": {

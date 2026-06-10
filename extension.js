@@ -93,6 +93,23 @@ function handleChunk(chunk) {
   }
 }
 
+function sendSclangControl(code) {
+  if (!sessionProc) {
+    try {
+      startSession();
+    } catch (err) {
+      vscode.window.showErrorMessage(String(err));
+      return;
+    }
+  }
+
+  try {
+    sessionProc.stdin.write(code + '\n');
+  } catch (err) {
+    vscode.window.showErrorMessage('Failed to send SuperCollider command: ' + String(err));
+  }
+}
+
 /**
  * Activate the extension: create a Notebook controller for SuperCollider.
  */
@@ -103,6 +120,16 @@ function activate(context) {
     serializer,
     { transientOutputs: false }
   ));
+
+  context.subscriptions.push(vscode.commands.registerCommand('supercollider-notebook.freeAll', () => {
+    sendSclangControl('s.freeAll');
+    vscode.window.showInformationMessage('Sent s.freeAll to SuperCollider.');
+  }));
+
+  context.subscriptions.push(vscode.commands.registerCommand('supercollider-notebook.rebootServer', () => {
+    sendSclangControl('s.reboot;');
+    vscode.window.showInformationMessage('Sent s.reboot to SuperCollider.');
+  }));
 
   const controller = vscode.notebooks.createNotebookController(
     'supercollider-controller',

@@ -1,0 +1,112 @@
+{
+  "scopeName": "source.sclang",
+  "name": "SuperCollider",
+  "fileTypes": ["sc", "scs", "scd", "scnb"],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#builtins"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#punctuation"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.sclang",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.sclang",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.sclang",
+          "begin": "\"",
+          "end": "\"",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.string.begin.sclang" }
+          },
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.string.end.sclang" }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.sclang",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.sclang",
+          "match": "\\b\\d+(?:\\.\\d+)?(?:e[+-]?\\d+)?\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.sclang",
+          "match": "\\b(?:if|then|else|while|do|for|in|true|false|nil|this|var|function|class|new|return|super|proto|ifTrue|ifFalse|whileTrue|whileFalse)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.sclang",
+          "match": "\\+\\+|--|\\+|\\-|\\*|\\/|=|==|!=|<=|>=|<|>"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.terminator.sclang",
+          "match": ";"
+        },
+        {
+          "name": "punctuation.bracket.sclang",
+          "match": "[\\[\\]\\(\\){}]"
+        },
+        {
+          "name": "punctuation.separator.sclang",
+          "match": "\\."
+        }
+      ]
+    },
+    "builtins": {
+      "patterns": [
+        {
+          "name": "support.class.sclang",
+          "match": "\\b(?:Server|Group|SynthDef|Synth|Buffer|Env|EnvGen|Pbind|Pseq|Ppar|Pattern|Routine|Task|TempoClock|Fork|Ndef|Node|SynthDef|SinOsc|Saw|Pulse|PulseFB|LFPulse|LFNoise0|LFNoise1|WhiteNoise|Oscillator|Filter|LPF|HPF|BPF|Tanh|SinOscFB|DelayN|CombN|Pan2|Out|FreeSelf|s)\\b"
+        }
+      ]
+    }
+  }
+}
