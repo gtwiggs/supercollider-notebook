@@ -1,19 +1,37 @@
 {
-  "name": "hydra-video-synth",
-  "version": "1.0.0",
-  "description": "Playground",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "http-server . -p 8090 -c-1"
+  "name": "supercollider-notebook",
+  "displayName": "SuperCollider Notebook",
+  "description": "Minimal VS Code notebook prototype for SuperCollider (execute cells via sclang).",
+  "version": "0.0.1",
+  "publisher": "gtwiggs",
+  "engines": {
+    "vscode": "^1.75.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "hydra-video-synth"
-  },
-  "author": "Glenn Twiggs",
-  "license": "ISC",
-  "devDependencies": {
-    "http-server": "^14.1.1"
+  "main": "./extension.js",
+  "activationEvents": [
+    "onNotebook:supercollider-notebook"
+  ],
+  "categories": ["Other"],
+  "contributes": {
+    "notebooks": [
+      {
+        "type": "supercollider-notebook",
+        "displayName": "SuperCollider Notebook",
+        "selector": [
+          { "filenamePattern": "*.scnb" }
+        ]
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "SuperCollider Notebook",
+      "properties": {
+        "supercollider.sclang.Path": {
+          "type": "string",
+          "default": "/Applications/SuperCollider.app/Contents/MacOS/sclang",
+          "description": "Path to the SuperCollider sclang executable. Set this if sclang is not on your PATH."
+        }
+      }
+    }
   }
 }

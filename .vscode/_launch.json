@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Extension (telemetry off)",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+      "env": {
+        "APPLICATION_INSIGHTS_DISABLE_TELEMETRY": "1",
+        "APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL": "1"
+      },
+      "outFiles": []
+    },
+    {
+      "name": "Run Extension (disable runtime telemetry)",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}", "--disable-telemetry"],
+      "env": {
+        "APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL": "1"
+      },
+      "outFiles": []
+    }
+  ]
+}
