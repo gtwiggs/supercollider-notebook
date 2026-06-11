@@ -1,11 +1,13 @@
 // Example SuperCollider notebook
-// Cell 1
-// Play a sine tone briefly
+
+s.boot
+// %%
+// Play a sine tone
+
 (
-  s.waitForBoot({ [SinOsc.ar(440, 0, 0.1), SinOsc.ar(442, 0, 0.1)] }.play);
-);
-
-
-// Cell 2
+  { [SinOsc.ar(440, 0, 0.1), SinOsc.ar(442, 0, 0.1)] }.play
+)
+// %%
 // Post a message
-"Hello from SuperCollider".postln
+
+"Hello".postln
