@@ -5,6 +5,7 @@ const cp = require('child_process');
 let sessionProc = null;
 let stdoutBuf = '';
 const pending = new Map(); // id -> {resolve, reject}
+const NOTEBOOK_MARKER_PREFIX = '__SC_CELL_END__';
 
 const CELL_DELIMITER = /^\/\/\s*%%/;
 
@@ -65,6 +66,9 @@ function startSession() {
     throw e;
   }
 
+  sessionProc.stdout.on('data', (d) => handleChunk(d.toString()));
+  sessionProc.stderr.on('data', (d) => handleChunk(d.toString()));
+
   sessionProc.on('error', (err) => {
     if (err.code === 'ENOENT') {
       const message = `Could not find sclang binary at '${sclangPath}'. Add to environment path or use workspace setting supercollider.sclang.Path.`;
@@ -74,15 +78,6 @@ function startSession() {
       sessionProc = null;
       return;
     }
-    for (const { reject } of pending.values()) reject(err);
-    pending.clear();
-    sessionProc = null;
-  });
-
-  sessionProc.stdout.on('data', (d) => handleChunk(d.toString()));
-  sessionProc.stderr.on('data', (d) => handleChunk(d.toString()));
-
-  sessionProc.on('error', (err) => {
     for (const { reject } of pending.values()) reject(err);
     pending.clear();
     sessionProc = null;
@@ -100,7 +95,7 @@ function handleChunk(chunk) {
   stdoutBuf += chunk;
 
   // Process any complete markers
-  const markerRe = /__SC_CELL_END__([0-9a-fA-F_-]+)__/;
+  const markerRe = new RegExp(`${NOTEBOOK_MARKER_PREFIX}([0-9a-fA-F_-]+)__`);
   let match;
   while ((match = stdoutBuf.match(markerRe))) {
     const id = match[1];
@@ -207,7 +202,7 @@ async function executeSuperColliderSnippet(code, cell) {
   }
 
   const id = Date.now().toString(16) + '-' + Math.floor(Math.random() * 0xffff).toString(16);
-  const marker = `__SC_CELL_END__${id}__`;
+  const marker = `${NOTEBOOK_MARKER_PREFIX}${id}__`;
 
   const promise = new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
@@ -340,7 +335,7 @@ function activate(context) {
 
       // Create a unique marker for this cell so we know when output is complete
       const id = Date.now().toString(16) + '-' + Math.floor(Math.random() * 0xffff).toString(16);
-      const marker = `__SC_CELL_END__${id}__`;
+      const marker = `${NOTEBOOK_MARKER_PREFIX}${id}__`;
 
       const promise = new Promise((resolve, reject) => {
         pending.set(id, { resolve, reject });
@@ -363,6 +358,7 @@ function activate(context) {
       // Send the full cell as one block so SuperCollider receives the complete command at once.
       try {
         const payload = `${code.replace(/\r\n/g, '\n')}\n("${marker}").postln\n`;
+        console.log('[sclang] sendCell:', payload);
         sessionProc.stdin.write(payload);
       } catch (e) {
         const item = vscode.NotebookCellOutputItem.text('Failed to send code to sclang: ' + String(e));
