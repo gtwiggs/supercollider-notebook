@@ -46,6 +46,10 @@
         "title": "SuperCollider: s.freeAll"
       },
       {
+        "command": "supercollider-notebook.bootServer",
+        "title": "SuperCollider: boot server"
+      },
+      {
         "command": "supercollider-notebook.rebootServer",
         "title": "SuperCollider: reboot server"
       },
@@ -59,6 +63,12 @@
         "command": "supercollider-notebook.freeAll",
         "key": "ctrl+.",
         "mac": "cmd+.",
+        "when": "notebookEditorFocused && resourceExtname == .scnb"
+      },
+      {
+        "command": "supercollider-notebook.bootServer",
+        "key": "ctrl+B",
+        "mac": "cmd+B",
         "when": "notebookEditorFocused && resourceExtname == .scnb"
       },
       {

@@ -167,6 +167,11 @@ function activate(context) {
     vscode.window.showInformationMessage('Sent s.freeAll to SuperCollider.');
   }));
 
+  context.subscriptions.push(vscode.commands.registerCommand('supercollider-notebook.bootServer', () => {
+    sendSclangControl('s.boot;');
+    vscode.window.showInformationMessage('Sent s.boot to SuperCollider.');
+  }));
+
   context.subscriptions.push(vscode.commands.registerCommand('supercollider-notebook.rebootServer', () => {
     sendSclangControl('s.reboot;');
     vscode.window.showInformationMessage('Sent s.reboot to SuperCollider.');
