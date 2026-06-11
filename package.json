@@ -45,6 +45,10 @@
       {
         "command": "supercollider-notebook.rebootServer",
         "title": "SuperCollider: reboot server"
+      },
+      {
+        "command": "supercollider-notebook.runSelectionOrScope",
+        "title": "SuperCollider: Run selection or current scope"
       }
     ],
     "keybindings": [
@@ -58,6 +62,12 @@
         "command": "supercollider-notebook.rebootServer",
         "key": "ctrl+shift+.",
         "mac": "cmd+shift+.",
+        "when": "notebookEditorFocused && resourceExtname == .scnb"
+      },
+      {
+        "command": "supercollider-notebook.runSelectionOrScope",
+        "key": "ctrl+enter",
+        "mac": "cmd+enter",
         "when": "notebookEditorFocused && resourceExtname == .scnb"
       }
     ],
