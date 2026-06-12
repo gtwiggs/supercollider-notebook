@@ -1,10 +1,9 @@
 // %% md
-# Example SuperCollider Notebook
-// %%
+# SuperCollider Notebook
 
-s.boot
+When first launched, its normal to see a red indicator in the status bar. That means the SuperCollider server hasn't been started. You can start it by clicking the __Boot Server__ toolbar button or using the `Ctrl+B` hotkey to start the server.
 // %%
-// Play a sine tone
+// Play a detuned stereo sine tone
 
 (
   { [SinOsc.ar(440, 0, 0.1), SinOsc.ar(442, 0, 0.1)] }.play
@@ -14,11 +13,13 @@ s.boot
 
 "Hello".postln
 // %%
+// Request a plot form the server.
+
 {Impulse.ar(200)}.plot;
 // %% md
-# Complete Synth Example
+# Synth Lifecycle
 
-Each step of constructing and running the synth are in separate cells. This allows them to be run using the "Execute Cell and Below" button as there will be a _sync_ after each cell is executed.
+Each step of constructing and running the synth are in separate cells. Because each cell is ___synced___ after execution, "Execute Cell and Below" button allows them to complete successfully (avoinds the race condition for incomplete objects).
 // %%
 (
 SynthDef(\i, {

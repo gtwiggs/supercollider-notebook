@@ -56,15 +56,18 @@
     "commands": [
       {
         "command": "supercollider-notebook.freeAll",
-        "title": "SuperCollider: s.freeAll"
+          "icon": "$(mute)",
+        "title": "Free Server"
       },
       {
         "command": "supercollider-notebook.bootServer",
-        "title": "SuperCollider: boot server"
+          "icon": "$(run)",
+        "title": "Boot Server"
       },
       {
         "command": "supercollider-notebook.rebootServer",
-        "title": "SuperCollider: reboot server"
+          "icon": "$(run-all)",
+        "title": "Reboot Server"
       },
       {
         "command": "supercollider-notebook.executeSnippet",
@@ -107,6 +110,25 @@
           "description": "Path to the SuperCollider sclang executable. Set this if sclang is not on your PATH."
         }
       }
+    },
+    "menus": {
+      "notebook/toolbar": [
+        {
+          "command": "supercollider-notebook.freeAll",
+          "group": "navigation@1",
+          "when": "notebookType == supercollider-notebook"
+        },
+        {
+          "command": "supercollider-notebook.bootServer",
+          "group": "navigation@2",
+          "when": "notebookType == supercollider-notebook"
+        },
+        {
+          "command": "supercollider-notebook.rebootServer",
+          "group": "navigation@3",
+          "when": "notebookType == supercollider-notebook"
+        }
+      ]
     }
   },
   "dependencies": {

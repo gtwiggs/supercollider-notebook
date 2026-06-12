@@ -86,5 +86,3 @@ if (!allPassed) {
   process.exitCode = 1;
 }
 
-console.log('Add or edit test cases in test-getScopeRange.js to cover more cursor scenarios.');
-console.log('Run with: node test-getScopeRange.js');

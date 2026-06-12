@@ -56,3 +56,14 @@ Set the path explicitly if `sclang` is not in your shell PATH:
   "supercollider.sclang.Path": "/Applications/SuperCollider.app/Contents/MacOS/sclang"
 }
 ```
+
+---
+
+## Colophon
+
+- [Notebooks in VS Code](https://microsoft.github.io/vscode-essentials/en/08-notebooks.html)
+- [vscode-icons](https://github.com/microsoft/vscode-icons)
+- [The Coming of Age of Notebooks](https://code.visualstudio.com/blogs/2021/08/05/notebooks)
+- [supercolliderjs](https://deepwiki.com/crucialfelix/supercolliderjs/6-usage-examples)
+- [vscode-extension-samples/statusbar-sample](https://github.com/microsoft/vscode-extension-samples/blob/main/statusbar-sample/src/extension.ts)
+- [Extending Workbench](https://github.com/microsoft/vscode-docs/blob/main/api/extension-capabilities/extending-workbench.md)

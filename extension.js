@@ -2,80 +2,13 @@
 const vscode = require('vscode');
 const sc = require('supercolliderjs');
 const { getScopeOffsetRange } = require('./scopeRange');
+const { SuperColliderNotebookSerializer } = require('./SuperColliderNotebookSerializer');
 
 let lang = null;
-
-const CELL_DELIMITER = /^\/\/\s*%%/;
-const CELL_DELIMITER_MD = /^\/\/\s*%%\s*md\b/i;
-
-class SuperColliderNotebookSerializer {
-  async deserializeNotebook(content) {
-    const raw = Buffer.from(content).toString('utf8');
-    const lines = raw.split(/\r?\n/);
-    const cells = [];
-    let current = [];
-    // currentKind/language represent the kind for the current accumulating cell.
-    let currentKind = vscode.NotebookCellKind.Code;
-    let currentLang = 'sclang';
-
-    for (const line of lines) {
-      if (CELL_DELIMITER.test(line)) {
-        // Marker indicates the start of the next cell. If we have accumulated
-        // content, emit it as the previous cell with the previously set kind.
-        if (current.length > 0 || cells.length > 0) {
-          cells.push(new vscode.NotebookCellData(
-            currentKind,
-            current.join('\n'),
-            currentLang
-          ));
-        }
-
-        // Now set the kind for the upcoming cell described by this marker.
-        currentKind = CELL_DELIMITER_MD.test(line) ? vscode.NotebookCellKind.Markup : vscode.NotebookCellKind.Code;
-        currentLang = currentKind === vscode.NotebookCellKind.Markup ? 'markdown' : 'sclang';
-        current = [];
-      } else {
-        current.push(line);
-      }
-    }
-
-    if (current.length > 0 || cells.length === 0) {
-      // Emit trailing cell; default kind is whatever currentKind was last set to
-      cells.push(new vscode.NotebookCellData(
-        currentKind,
-        current.join('\n'),
-        currentLang
-      ));
-    }
-
-    if (cells.length === 1 && cells[0].value === '') {
-      return new vscode.NotebookData([]);
-    }
-
-    return new vscode.NotebookData(cells);
-  }
-
-  async serializeNotebook(data) {
-    // Serialize cells into a single text file, inserting markers that
-    // indicate the start of the following cell. If the following cell is
-    // markdown, include 'md' in the marker so deserialization restores kind.
-    let out = '';
-    for (let i = 0; i < data.cells.length; ++i) {
-      const cell = data.cells[i];
-      const text = cell.value.replace(/\r\n/g, '\n').replace(/\n$/, '');
-
-      // Prefix a marker that indicates the kind of this cell. This matches
-      // the deserializer which treats markers as starting the following cell.
-      if (i > 0 || cell.kind === vscode.NotebookCellKind.Markup) {
-        const marker = cell.kind === vscode.NotebookCellKind.Markup ? '// %% md' : '// %%';
-        out += (out.length > 0 ? '\n' : '') + marker + '\n';
-      }
-
-      out += text;
-    }
-    return Buffer.from(out, 'utf8');
-  }
-}
+let statusBar = null;
+let statusBarPollTimer = null;
+let statusBarUpdating = false;
+let statusBarPopupMessage = 'SuperCollider server status unknown.';
 
 async function startSession() {
   if (lang) return;
@@ -250,12 +183,99 @@ function activate(context) {
   };
 
   context.subscriptions.push(controller);
+
+  // Status Bar
+
+	// Register a command that is invoked when the status bar item is selected.
+
+  const statusBarCommandId = 'sclang.serverStatus';
+	context.subscriptions.push(vscode.commands.registerCommand(statusBarCommandId, () => {
+		vscode.window.showInformationMessage(statusBarPopupMessage);
+	}));
+
+  // Create the Status Bar item
+
+  statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+	statusBar.command = statusBarCommandId;
+	context.subscriptions.push(statusBar);
+
+  // Register a listener that keeps the status bar up to date.
+
+  statusBarPollTimer = setInterval(() => {
+    void updateStatusBarItem();
+  }, 1000);
+
+  context.subscriptions.push(new vscode.Disposable(() => {
+    if (statusBarPollTimer) {
+      clearInterval(statusBarPollTimer);
+      statusBarPollTimer = null;
+    }
+  }));
+
+	// update status bar item once at start
+	void updateStatusBarItem();
 }
 
 function deactivate() {
+  if (statusBarPollTimer) {
+    clearInterval(statusBarPollTimer);
+    statusBarPollTimer = null;
+  }
   if (lang) {
     lang.quit().catch(() => {});
     lang = null;
+  }
+}
+
+// Update Status Bar
+
+async function executeScRequest(code) {
+  try {
+    await startSession();
+    const safeCode = code.replace(/\r\n/g, '\n');
+    return await lang.interpret(safeCode, undefined, true);
+  } catch (err) {
+    statusBarPopupMessage = 'Unexpected error accessing the SuperCollider server:\n' + String(err);
+    /*
+      error  : {
+          "code": "ERR_STREAM_DESTROYED"
+        }
+    */
+    console.error('Failed to execute SuperCollider request:', err);
+    return 0;
+  }
+}
+
+async function updateStatusBarItem() {
+  if (!statusBar || statusBarUpdating) return;
+  statusBarUpdating = true;
+  try {
+    const status = await executeScRequest('if ( s.serverRunning, "yes", "no" )');
+    if (status === 'yes') {
+      // get s.peakCPU & s.avgCPU and include in the message.
+      const peak = 0;
+      const avg = 0;
+      statusBar.text = `$(gear) Running ${avg}%`;
+      statusBar.color = new vscode.ThemeColor('statusBar.foreground');
+      statusBar.backgroundColor = undefined; // theme default
+      statusBarPopupMessage = `SuperCollider server is running. Peak CPU usage: ${peak}%, average CPU usage: ${avg}%`;
+    } else {
+      const status = await executeScRequest('if ( s.serverBooting, "yes", "no" )');
+      if (status === 'yes') {
+        statusBar.text = '$(gear) Booting';
+        statusBar.color = new vscode.ThemeColor('statusBarItem.warningForeground');
+        statusBar.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
+        statusBarPopupMessage = 'SuperCollider server is booting.';
+      } else {
+        statusBar.text = '$(gear) Stopped';
+        statusBar.color = new vscode.ThemeColor('statusBarItem.errorForeground');
+        statusBar.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
+        statusBarPopupMessage = 'SuperCollider server is stopped.';
+      }
+    }
+    statusBar.show();
+  } finally {
+    statusBarUpdating = false;
   }
 }
 

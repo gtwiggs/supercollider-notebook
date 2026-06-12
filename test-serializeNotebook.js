@@ -59,19 +59,27 @@ const scenarios = [
   { name: 'mixed', cells: [{ kind: 'code', value: 'a=1;' }, { kind: 'code', value: 'b=2;' }, { kind: 'markup', value: '# header' }, { kind: 'code', value: 'a.postln;' }] },
 ];
 
+let allPassed = true;
+
 for (const s of scenarios) {
   const back = roundTrip(s.cells);
   // Verify kinds and counts
-  assert.strictEqual(back.length, s.cells.length, `scenario ${s.name} produced wrong cell count`);
-  for (let i = 0; i < s.cells.length; ++i) {
-    const expectKind = s.cells[i].kind === 'markup' ? 'markup' : 'code';
-    assert.strictEqual(back[i].kind, expectKind, `scenario ${s.name} cell ${i} kind mismatch`);
-    // text should match ignoring trailing newline normalization
-    const expText = s.cells[i].value.replace(/\r\n/g, '\n').replace(/\n$/, '');
-    const gotText = back[i].value.replace(/\r\n/g, '\n').replace(/\n$/, '');
-    assert.strictEqual(gotText, expText, `scenario ${s.name} cell ${i} text mismatch`);
+  try {
+    assert.strictEqual(back.length, s.cells.length, `scenario ${s.name} produced wrong cell count`);
+    for (let i = 0; i < s.cells.length; ++i) {
+      const expectKind = s.cells[i].kind === 'markup' ? 'markup' : 'code';
+      assert.strictEqual(back[i].kind, expectKind, `scenario ${s.name} cell ${i} kind mismatch`);
+      // text should match ignoring trailing newline normalization
+      const expText = s.cells[i].value.replace(/\r\n/g, '\n').replace(/\n$/, '');
+      const gotText = back[i].value.replace(/\r\n/g, '\n').replace(/\n$/, '');
+      assert.strictEqual(gotText, expText, `scenario ${s.name} cell ${i} text mismatch`);
+    }
+    console.log(`PASS: ${s.name}`);
+  } catch (error) {
+    console.log(`FAIL: ${s.name}`);
   }
 }
 
-console.log('PASS: serialize/deserialize roundtrip tests');
-process.exit(0);
+if (!allPassed) {
+  process.exitCode = 1;
+}
