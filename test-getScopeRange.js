@@ -8,11 +8,12 @@ function runTestCase(name, code, offset, expected) {
   const actual = getScopeOffsetRange(code, offset);
   const passed = JSON.stringify(actual) === JSON.stringify(expected);
   console.log(`${passed ? 'PASS' : 'FAIL'}: ${name}`);
-  console.log(`  code: ${JSON.stringify(code)}`);
-  console.log(`  offset: ${offset}`);
-  console.log(`  expected: ${formatRange(expected)}`);
-  console.log(`  actual:   ${formatRange(actual)}`);
-  console.log('');
+  if (!passed) {
+    console.log(`      code: ${JSON.stringify(code)}`);
+    console.log(`      offset: ${offset}`);
+    console.log(`      expected: ${formatRange(expected)}`);
+    console.log(`      actual:   ${formatRange(actual)}`);
+  }
   return passed;
 }
 
@@ -28,6 +29,20 @@ const cases = [
     code: 'foo(bar + 1)',
     offset: 12,
     expected: { start: 3, end: 12 },
+  },
+  {
+    name: 'prefer outermost enclosing parentheses over inner scope',
+    code: "(\n" +
+          "  r = {\n" +
+          "    loop{\n" +
+          "      s.bind{ Synth(\\i) };\n" +
+          "      (1/200).yield;\n" +
+          "    }\n" +
+          "  }.r.play\n" +
+          ");\n" +
+          "r.stop();\n",
+    offset: 56,
+    expected: { start: 0, end: 86 },
   },
   {
     name: 'fallback to current line when no enclosing scope',

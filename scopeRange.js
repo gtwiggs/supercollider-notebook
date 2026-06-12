@@ -1,4 +1,4 @@
-function findEnclosingDelimiterRange(text, offset, openChar, closeChar) {
+function findEnclosingDelimiterRanges(text, offset, openChar, closeChar) {
   const ranges = [];
   for (let start = offset - 1; start >= 0; start--) {
     if (text[start] !== openChar) continue;
@@ -19,12 +19,7 @@ function findEnclosingDelimiterRange(text, offset, openChar, closeChar) {
     }
   }
 
-  if (ranges.length === 0) {
-    return undefined;
-  }
-
-  ranges.sort((a, b) => (a.end - a.start) - (b.end - b.start));
-  return ranges[0];
+  return ranges;
 }
 
 function getLineRange(text, offset) {
@@ -39,15 +34,21 @@ function getScopeOffsetRange(text, offset) {
     return getLineRange(text, 0);
   }
 
-  const candidateRanges = [];
   const searchOffset = offset - 1;
 
-  const parenRange = findEnclosingDelimiterRange(text, searchOffset, '(', ')');
-  if (parenRange) candidateRanges.push(parenRange);
-  const braceRange = findEnclosingDelimiterRange(text, searchOffset, '{', '}');
-  if (braceRange) candidateRanges.push(braceRange);
-  const bracketRange = findEnclosingDelimiterRange(text, searchOffset, '[', ']');
-  if (bracketRange) candidateRanges.push(bracketRange);
+  const parenRanges = findEnclosingDelimiterRanges(text, searchOffset, '(', ')');
+  if (parenRanges.length > 0) {
+    return parenRanges.reduce((outermost, range) => (
+      range.start < outermost.start ? range : outermost
+    ), parenRanges[0]);
+  }
+
+  const braceRanges = findEnclosingDelimiterRanges(text, searchOffset, '{', '}');
+  const bracketRanges = findEnclosingDelimiterRanges(text, searchOffset, '[', ']');
+
+  const candidateRanges = [];
+  if (braceRanges.length > 0) candidateRanges.push(braceRanges.sort((a, b) => (a.end - a.start) - (b.end - b.start))[0]);
+  if (bracketRanges.length > 0) candidateRanges.push(bracketRanges.sort((a, b) => (a.end - a.start) - (b.end - b.start))[0]);
 
   if (candidateRanges.length > 0) {
     candidateRanges.sort((a, b) => (a.end - a.start) - (b.end - b.start));
@@ -59,5 +60,5 @@ function getScopeOffsetRange(text, offset) {
 
 module.exports = {
   getScopeOffsetRange,
-  findEnclosingDelimiterRange,
+  findEnclosingDelimiterRanges,
 };
