@@ -6,6 +6,7 @@ const { getScopeOffsetRange } = require('./scopeRange');
 let lang = null;
 
 const CELL_DELIMITER = /^\/\/\s*%%/;
+const CELL_DELIMITER_MD = /^\/\/\s*%%\s*md\b/i;
 
 class SuperColliderNotebookSerializer {
   async deserializeNotebook(content) {
@@ -13,25 +14,39 @@ class SuperColliderNotebookSerializer {
     const lines = raw.split(/\r?\n/);
     const cells = [];
     let current = [];
+    // currentKind/language represent the kind for the current accumulating cell.
+    let currentKind = vscode.NotebookCellKind.Code;
+    let currentLang = 'sclang';
 
     for (const line of lines) {
       if (CELL_DELIMITER.test(line)) {
-        cells.push(new vscode.NotebookCellData(
-          vscode.NotebookCellKind.Code,
-          current.join('\n'),
-          'sclang'
-        ));
+        // Marker indicates the start of the next cell. If we have accumulated
+        // content, emit it as the previous cell with the previously set kind.
+        if (current.length > 0 || cells.length > 0) {
+          cells.push(new vscode.NotebookCellData(
+            currentKind,
+            current.join('\n'),
+            currentLang
+          ));
+        }
+
+        // Now set the kind for the upcoming cell described by this marker.
+        currentKind = CELL_DELIMITER_MD.test(line) ? vscode.NotebookCellKind.Markup : vscode.NotebookCellKind.Code;
+        currentLang = currentKind === vscode.NotebookCellKind.Markup ? 'markdown' : 'sclang';
         current = [];
       } else {
         current.push(line);
       }
     }
 
-    cells.push(new vscode.NotebookCellData(
-      vscode.NotebookCellKind.Code,
-      current.join('\n'),
-      'sclang'
-    ));
+    if (current.length > 0 || cells.length === 0) {
+      // Emit trailing cell; default kind is whatever currentKind was last set to
+      cells.push(new vscode.NotebookCellData(
+        currentKind,
+        current.join('\n'),
+        currentLang
+      ));
+    }
 
     if (cells.length === 1 && cells[0].value === '') {
       return new vscode.NotebookData([]);
@@ -41,10 +56,24 @@ class SuperColliderNotebookSerializer {
   }
 
   async serializeNotebook(data) {
-    const text = data.cells
-      .map((cell) => cell.value.replace(/\r\n/g, '\n').replace(/\n$/, ''))
-      .join('\n// %%\n');
-    return Buffer.from(text, 'utf8');
+    // Serialize cells into a single text file, inserting markers that
+    // indicate the start of the following cell. If the following cell is
+    // markdown, include 'md' in the marker so deserialization restores kind.
+    let out = '';
+    for (let i = 0; i < data.cells.length; ++i) {
+      const cell = data.cells[i];
+      const text = cell.value.replace(/\r\n/g, '\n').replace(/\n$/, '');
+
+      // Prefix a marker that indicates the kind of this cell. This matches
+      // the deserializer which treats markers as starting the following cell.
+      if (i > 0 || cell.kind === vscode.NotebookCellKind.Markup) {
+        const marker = cell.kind === vscode.NotebookCellKind.Markup ? '// %% md' : '// %%';
+        out += (out.length > 0 ? '\n' : '') + marker + '\n';
+      }
+
+      out += text;
+    }
+    return Buffer.from(out, 'utf8');
   }
 }
 
@@ -128,7 +157,7 @@ function activate(context) {
     'SuperCollider'
   );
 
-  controller.supportedLanguages = ['sclang', 'supercollider'];
+  controller.supportedLanguages = ['sclang', 'supercollider', 'markdown'];
 
   async function executeSnippet() {
     const activeEditor = vscode.window.activeTextEditor
@@ -166,6 +195,12 @@ function activate(context) {
     const execution = controller.createNotebookCellExecution(cell);
     execution.start(Date.now());
     execution.clearOutput();
+
+    // If this is a markdown cell, there's nothing to run — mark success.
+    if (cell.kind === vscode.NotebookCellKind.Markup) {
+      execution.end(true, Date.now());
+      return;
+    }
 
     const code = snippet && snippet.length > 0 ? snippet : cell.document.getText();
 

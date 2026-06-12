@@ -1,4 +1,6 @@
-// Example SuperCollider notebook
+// %% md
+# Example SuperCollider Notebook
+// %%
 
 s.boot
 // %%
@@ -13,6 +15,10 @@ s.boot
 "Hello".postln
 // %%
 {Impulse.ar(200)}.plot;
+// %% md
+# Complete Synth Example
+
+Each step of constructing and running the synth are in separate cells. This allows them to be run using the "Execute Cell and Below" button as there will be a _sync_ after each cell is executed.
 // %%
 (
 SynthDef(\i, {
@@ -22,9 +28,9 @@ SynthDef(\i, {
 	OffsetOut.ar(0, sig);
 }).add
 )
-
+// %%
 Synth(\i);
-
+// %%
 (
 r = {
 	loop{
@@ -34,4 +40,4 @@ r = {
 }.r.play
 )
 
-r.stop;
+// r.stop();

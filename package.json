@@ -10,7 +10,7 @@
   },
   "main": "./extension.js",
   "scripts": {
-    "test": "node test-getScopeRange.js"
+    "test": "node test-getScopeRange.js && node test-serializeNotebook.js"
   },
   "activationEvents": [
     "onNotebook:supercollider-notebook"
