@@ -4,6 +4,7 @@
   "description": "Minimal VS Code notebook prototype for SuperCollider (execute cells via sclang).",
   "version": "0.0.1",
   "publisher": "gtwiggs",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -14,13 +15,23 @@
   "activationEvents": [
     "onNotebook:supercollider-notebook"
   ],
-  "categories": ["Other"],
+  "categories": [
+    "Other"
+  ],
   "contributes": {
     "languages": [
       {
         "id": "sclang",
-        "aliases": ["SuperCollider", "sclang"],
-        "extensions": [".sc", ".scs", ".scd", ".scnb"],
+        "aliases": [
+          "SuperCollider",
+          "sclang"
+        ],
+        "extensions": [
+          ".sc",
+          ".scs",
+          ".scd",
+          ".scnb"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -36,7 +47,9 @@
         "type": "supercollider-notebook",
         "displayName": "SuperCollider Notebook",
         "selector": [
-          { "filenamePattern": "*.scnb" }
+          {
+            "filenamePattern": "*.scnb"
+          }
         ]
       }
     ],
@@ -54,7 +67,7 @@
         "title": "SuperCollider: reboot server"
       },
       {
-        "command": "supercollider-notebook.runSelectionOrScope",
+        "command": "supercollider-notebook.executeSnippet",
         "title": "SuperCollider: Run selection or current scope"
       }
     ],
@@ -78,7 +91,7 @@
         "when": "notebookEditorFocused && resourceExtname == .scnb"
       },
       {
-        "command": "supercollider-notebook.runSelectionOrScope",
+        "command": "supercollider-notebook.executeSnippet",
         "key": "ctrl+enter",
         "mac": "cmd+enter",
         "when": "notebookEditorFocused && resourceExtname == .scnb"
@@ -95,5 +108,8 @@
         }
       }
     }
+  },
+  "dependencies": {
+    "supercolliderjs": "^1.0.1"
   }
 }

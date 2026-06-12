@@ -1,15 +1,13 @@
-# SuperCollider Notebook (prototype)
+# SuperCollider Notebook
 
-This workspace contains a minimal VS Code extension prototype for SuperCollider that provides a notebook-like editing and execution experience using `sclang`.
+This workspace extension provides a SuperCollider notebook experience.
 
 ## What it does
 
 - Registers a `.scnb` notebook type for SuperCollider source.
 - Runs notebook cells through a persistent `sclang` process.
 - Supports normal cell execution via the notebook run action.
-- Supports scope-aware execution for the current cursor position or current selection.
-- Adds a keyboard shortcut for running the selected code or enclosing block.
-- Allows overriding the `sclang` binary path via workspace settings.
+- Supports scope-aware execution for the current cursor position.
 
 ## Run selection or current scope
 
@@ -29,6 +27,8 @@ This gives a SuperCollider-style workflow in the notebook while preserving norma
 
 - `SuperCollider: Run selection or current scope`
   - default keybinding: `cmd+enter` on macOS, `ctrl+enter` on Windows/Linux
+- `SuperCollider: boot server`
+  - default keybinding: `cmd+B` / `ctrl+B`
 - `SuperCollider: s.freeAll`
   - default keybinding: `cmd+.` / `ctrl+.`
 - `SuperCollider: reboot server`
@@ -36,8 +36,7 @@ This gives a SuperCollider-style workflow in the notebook while preserving norma
 
 ## Requirements
 
-- `sclang` must be installed.
-- Either `sclang` must be on your PATH, or set `supercollider.sclang.Path` in workspace settings to the full executable path.
+- `sclang` must be installed and available to VSCode (see [Configuration](#Configuration) for help).
 
 ## How to run locally
 
@@ -57,8 +56,3 @@ Set the path explicitly if `sclang` is not in your shell PATH:
   "supercollider.sclang.Path": "/Applications/SuperCollider.app/Contents/MacOS/sclang"
 }
 ```
-
-## Notes
-
-- This is still a prototype. Future improvements may include better output parsing, notebook serialization improvements, and richer SuperCollider editor integration.
-- The extension currently executes code by sending a block of text to `sclang` and waiting for a marker to appear in output.

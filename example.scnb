@@ -11,3 +11,5 @@ s.boot
 // Post a message
 
 "Hello".postln
+// %%
+{Impulse.ar(200)}.plot;
