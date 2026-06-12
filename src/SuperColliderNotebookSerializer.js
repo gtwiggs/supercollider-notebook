@@ -12,7 +12,6 @@ class SuperColliderNotebookSerializer {
     // currentKind/language represent the kind for the current accumulating cell.
     let currentKind = vscode.NotebookCellKind.Code;
     let currentLang = 'sclang';
-
     for (const line of lines) {
       if (CELL_DELIMITER.test(line)) {
         // Marker indicates the start of the next cell. If we have accumulated

@@ -1,0 +1,12 @@
+.github/
+.parcel-cache/
+.vscode/
+chat.json
+example.scnb
+*.vsix
+.git/
+.gitignore
+package-lock.json
+src/
+test/
+node_modules/

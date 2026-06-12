@@ -1,4 +1,4 @@
-const { getScopeOffsetRange } = require('./scopeRange');
+const { getScopeOffsetRange } = require('../src/scopeRange');
 
 function formatRange(range) {
   return range ? `{ start: ${range.start}, end: ${range.end} }` : 'undefined';

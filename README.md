@@ -1,6 +1,6 @@
 # SuperCollider Notebook
 
-This workspace extension provides a SuperCollider notebook experience.
+A VSCode workspace extension providing a SuperCollider notebook experience.
 
 ## What it does
 
@@ -61,9 +61,33 @@ Set the path explicitly if `sclang` is not in your shell PATH:
 
 ## Colophon
 
+### To Do
+
+- [ ] Enhance `freeAll` to halt Routines. Routines are client-side, so they're not halted by commands to the server.
+- [ ] Recover from server abend (i.e., killing the server process). Error is:
+```json
+error  : {
+          "code": "ERR_STREAM_DESTROYED"
+        }
+```
+- [ ] Continue improvements to scoped statement execution.
+- [ ] Code formatting
+- [ ] Code completion
+- [ ] Expansion of trigger phrases - sd + tab generates a SynthDef with reasonable defaults.
+- [ ] Support keybindings present in the SuperCollider IDE.
+- [ ] Access to language help, such as
+```js
+const allUgens = await lang.interpret("UGen.allSubclasses");
+```
+- [ ] Lookup doc for selected symbol
+
+### Refernces
+
 - [Notebooks in VS Code](https://microsoft.github.io/vscode-essentials/en/08-notebooks.html)
 - [vscode-icons](https://github.com/microsoft/vscode-icons)
 - [The Coming of Age of Notebooks](https://code.visualstudio.com/blogs/2021/08/05/notebooks)
 - [supercolliderjs](https://deepwiki.com/crucialfelix/supercolliderjs/6-usage-examples)
+- [supercolliderjs on NPM](https://www.npmjs.com/package/supercolliderjs)
 - [vscode-extension-samples/statusbar-sample](https://github.com/microsoft/vscode-extension-samples/blob/main/statusbar-sample/src/extension.ts)
 - [Extending Workbench](https://github.com/microsoft/vscode-docs/blob/main/api/extension-capabilities/extending-workbench.md)
+- Built with [Parcel](https://parceljs.org), a wonderfully simple packager.

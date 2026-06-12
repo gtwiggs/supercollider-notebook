@@ -5,12 +5,21 @@
   "version": "0.0.1",
   "publisher": "gtwiggs",
   "license": "MIT",
-  "engines": {
-    "vscode": "^1.75.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gtwiggs/supercollider-notebook.git"
   },
-  "main": "./extension.js",
+  "engines": {
+    "vscode": "^1.75.0",
+    "node": ">= 18"
+  },
+  "source": "./src/extension.js",
+  "main": "./dist/extension.js",
   "scripts": {
-    "test": "node test-getScopeRange.js && node test-serializeNotebook.js"
+    "watch": "parcel watch",
+    "build": "parcel build",
+    "package": "npm run build && npx @vscode/vsce package",
+    "test": "node ./test/test-getScopeRange.js && node ./test/test-serializeNotebook.js"
   },
   "activationEvents": [
     "onNotebook:supercollider-notebook"
@@ -56,17 +65,17 @@
     "commands": [
       {
         "command": "supercollider-notebook.freeAll",
-          "icon": "$(mute)",
+        "icon": "$(mute)",
         "title": "Free Server"
       },
       {
         "command": "supercollider-notebook.bootServer",
-          "icon": "$(run)",
+        "icon": "$(run)",
         "title": "Boot Server"
       },
       {
         "command": "supercollider-notebook.rebootServer",
-          "icon": "$(run-all)",
+        "icon": "$(run-all)",
         "title": "Reboot Server"
       },
       {
@@ -133,5 +142,10 @@
   },
   "dependencies": {
     "supercolliderjs": "^1.0.1"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.9.2",
+    "mock-require": "^3.0.3",
+    "parcel": "^2.16.4"
   }
 }

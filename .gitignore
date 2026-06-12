@@ -4,3 +4,7 @@ _site
 .DS_Store
 global.out.css
 .BridgeSort
+chat.json
+*.vsix
+.parcel-cache/
+dist/
