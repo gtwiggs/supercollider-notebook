@@ -29,9 +29,61 @@ function getLineRange(text, offset) {
   return { start: lineStart, end: lineEnd };
 }
 
+function findMatchingClose(text, start, openChar, closeChar) {
+  let depth = 0;
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === openChar) {
+      depth++;
+    } else if (text[i] === closeChar) {
+      depth--;
+      if (depth === 0) {
+        return i;
+      }
+    }
+  }
+  return undefined;
+}
+
+function findFunctionCallRange(text, offset) {
+  const lineRange = getLineRange(text, offset);
+  const line = text.slice(lineRange.start, lineRange.end);
+  let relOffset = Math.max(0, Math.min(offset - lineRange.start, line.length - 1));
+
+  for (let i = relOffset; i >= 0; i--) {
+    if (line[i] !== '(') continue;
+    const close = findMatchingClose(line, i, '(', ')');
+    if (close === undefined) continue;
+
+    let start = i;
+    while (start > 0 && /[\w\d_.$\s]/.test(line[start - 1])) {
+      start -= 1;
+    }
+
+    const prefix = line.slice(start, i).trim();
+    if (!prefix.includes('.')) {
+      continue;
+    }
+
+    const absoluteClose = lineRange.start + close;
+    const nextChar = line[close + 1];
+    const shouldStopAtCursor = offset <= absoluteClose && nextChar !== ';';
+    return {
+      start: lineRange.start + start,
+      end: shouldStopAtCursor ? offset : absoluteClose + 1,
+    };
+  }
+
+  return undefined;
+}
+
 function getScopeOffsetRange(text, offset) {
   if (offset === 0) {
     return getLineRange(text, 0);
+  }
+
+  const functionCallRange = findFunctionCallRange(text, offset);
+  if (functionCallRange) {
+    return functionCallRange;
   }
 
   const searchOffset = offset - 1;

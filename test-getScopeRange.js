@@ -45,6 +45,24 @@ const cases = [
     expected: { start: 0, end: 86 },
   },
   {
+    name: 'recognize function calls',
+    code: "r.stop()\n",
+    offset: 7,
+    expected: { start: 0, end: 7 },
+  },
+  {
+    name: 'recognize function calls with whitespace',
+    code: "r . stop()\n",
+    offset: 9,
+    expected: { start: 0, end: 9 },
+  },
+  {
+    name: 'recognize function calls with statement separator',
+    code: "r.stop();\n",
+    offset: 7,
+    expected: { start: 0, end: 8 },
+  },
+  {
     name: 'fallback to current line when no enclosing scope',
     code: '\nSynth(\\i)\n"ignore me".postln\n',
     offset: 4,
