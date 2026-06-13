@@ -11,10 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -22,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -32,7 +28,7 @@ jobs:
         run: npm test
 
       - name: Package extension
-        run: npx vsce package
+        run: npm package
 
       - name: Upload VSIX
         uses: actions/upload-artifact@v4
