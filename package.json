@@ -75,7 +75,7 @@
       },
       {
         "command": "supercollider-notebook.rebootServer",
-        "icon": "$(run-all)",
+        "icon": "$(refresh)",
         "title": "Reboot Server"
       },
       {

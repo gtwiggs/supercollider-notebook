@@ -1,5 +1,7 @@
 const { getScopeOffsetRange } = require('../src/scopeRange');
 
+const suiteName = 'getScopeRange';
+
 function formatRange(range) {
   return range ? `{ start: ${range.start}, end: ${range.end} }` : 'undefined';
 }
@@ -7,7 +9,7 @@ function formatRange(range) {
 function runTestCase(name, code, offset, expected) {
   const actual = getScopeOffsetRange(code, offset);
   const passed = JSON.stringify(actual) === JSON.stringify(expected);
-  console.log(`${passed ? 'PASS' : 'FAIL'}: ${name}`);
+  console.log(`[${passed ? 'PASS' : 'FAIL'}] ${suiteName}: ${name}`);
   if (!passed) {
     console.log(`      code: ${JSON.stringify(code)}`);
     console.log(`      offset: ${offset}`);

@@ -1,6 +1,8 @@
 const assert = require("assert");
 const mock = require("mock-require");
 
+const suiteName = 'serializeNotebook';
+
 // Setup mock vscode objects for testing outside of actual vscode environment.
 
 class NotebookCellData {
@@ -117,10 +119,10 @@ for (const s of scenarios) {
             `scenario ${s.name} cell ${i} text mismatch`,
           );
         }
-        console.log(`PASS: ${s.name}`);
+        console.log(`[PASS] ${suiteName}: ${s.name}`);
       } catch (error) {
         allPassed = false;
-        console.log(`FAIL: ${s.name} - ${error.message}`);
+        console.log(`[FAIL] ${suiteName}: ${s.name} - ${error.message}`);
       }
     })
     .catch((error) => {
